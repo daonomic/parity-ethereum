@@ -117,6 +117,8 @@ pub struct Schedule {
 	pub have_bitwise_shifting: bool,
 	/// Kill basic accounts below this balance if touched.
 	pub kill_dust: CleanDustMode,
+	/// Enable EIP-1283 rules
+	pub eip1283: bool,
 	/// VM execution does not increase null signed address nonce if this field is true.
 	pub keep_unsigned_nonce: bool,
 	/// Wasm extra schedule settings, if wasm activated
@@ -244,6 +246,7 @@ impl Schedule {
 			blockhash_gas: 20,
 			have_static_call: false,
 			kill_dust: CleanDustMode::Off,
+			eip1283: false,
 			keep_unsigned_nonce: false,
 			wasm: None,
 		}
@@ -317,6 +320,7 @@ impl Schedule {
 			blockhash_gas: 20,
 			have_static_call: false,
 			kill_dust: CleanDustMode::Off,
+			eip1283: false,
 			keep_unsigned_nonce: false,
 			wasm: None,
 		}
