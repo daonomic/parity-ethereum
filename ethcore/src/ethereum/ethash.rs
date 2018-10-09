@@ -38,7 +38,7 @@ const SNAPSHOT_BLOCKS: u64 = 5000;
 const MAX_SNAPSHOT_BLOCKS: u64 = 30000;
 /// Default number of blocks the difficulty bomb is delayed in EIP-{649,1234}
 const DEFAULT_EIP649_DELAY: u64 = 3_000_000;
-const DEFAULT_EIP1234_DELAY: u64 = 3_000_000;
+const DEFAULT_EIP1234_DELAY: u64 = 2_000_000;
 
 /// Ethash specific seal
 #[derive(Debug, PartialEq)]
@@ -526,7 +526,7 @@ mod tests {
 			eip649_delay: 3_000_000,
 			eip649_reward: None,
 			eip1234_transition: u64::max_value(),
-			eip1234_delay: 3_000_000,
+			eip1234_delay: 2_000_000,
 			eip1234_reward: None,
 			expip2_transition: u64::max_value(),
 			expip2_duration_limit: 30,
