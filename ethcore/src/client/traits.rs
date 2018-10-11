@@ -46,7 +46,6 @@ use kvdb::DBValue;
 
 use types::ids::*;
 use types::basic_account::BasicAccount;
-use types::trace_filter::Filter as TraceFilter;
 use types::call_analytics::CallAnalytics;
 use types::blockchain_info::BlockChainInfo;
 use types::block_status::BlockStatus;
@@ -319,9 +318,6 @@ pub trait BlockChainClient : Sync + Send + AccountData + BlockChain + CallContra
 
 	/// Replays all the transactions in a given block for inspection.
 	fn replay_block_transactions(&self, block: BlockId, analytics: CallAnalytics) -> Result<Box<Iterator<Item = (H256, Executed)>>, CallError>;
-
-	/// Returns traces matching given filter.
-	fn filter_traces(&self, filter: TraceFilter) -> Option<Vec<LocalizedTrace>>;
 
 	/// Returns trace with given id.
 	fn trace(&self, trace: TraceId) -> Option<LocalizedTrace>;
