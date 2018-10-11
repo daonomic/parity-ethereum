@@ -267,9 +267,7 @@ pub fn get_test_client_with_blocks(blocks: Vec<Bytes>) -> Arc<Client> {
 pub fn new_db() -> Arc<BlockChainDB> {
 	struct TestBlockChainDB {
 		_blooms_dir: TempDir,
-		_trace_blooms_dir: TempDir,
 		blooms: blooms_db::Database,
-		trace_blooms: blooms_db::Database,
 		key_value: Arc<KeyValueDB>,
 	}
 
@@ -281,20 +279,13 @@ pub fn new_db() -> Arc<BlockChainDB> {
 		fn blooms(&self) -> &blooms_db::Database {
 			&self.blooms
 		}
-
-		fn trace_blooms(&self) -> &blooms_db::Database {
-			&self.trace_blooms
-		}
 	}
 
 	let blooms_dir = TempDir::new("").unwrap();
-	let trace_blooms_dir = TempDir::new("").unwrap();
 
 	let db = TestBlockChainDB {
 		blooms: blooms_db::Database::open(blooms_dir.path()).unwrap(),
-		trace_blooms: blooms_db::Database::open(trace_blooms_dir.path()).unwrap(),
 		_blooms_dir: blooms_dir,
-		_trace_blooms_dir: trace_blooms_dir,
 		key_value: Arc::new(::kvdb_memorydb::create(::db::NUM_COLUMNS.unwrap()))
 	};
 
@@ -309,7 +300,6 @@ pub fn restoration_db_handler(config: kvdb_rocksdb::DatabaseConfig) -> Box<Block
 
 	struct RestorationDB {
 		blooms: blooms_db::Database,
-		trace_blooms: blooms_db::Database,
 		key_value: Arc<KeyValueDB>,
 	}
 
@@ -321,24 +311,16 @@ pub fn restoration_db_handler(config: kvdb_rocksdb::DatabaseConfig) -> Box<Block
 		fn blooms(&self) -> &blooms_db::Database {
 			&self.blooms
 		}
-
-		fn trace_blooms(&self) -> &blooms_db::Database {
-			&self.trace_blooms
-		}
 	}
 
 	impl BlockChainDBHandler for RestorationDBHandler {
 		fn open(&self, db_path: &Path) -> io::Result<Arc<BlockChainDB>> {
 			let key_value = Arc::new(kvdb_rocksdb::Database::open(&self.config, &db_path.to_string_lossy())?);
 			let blooms_path = db_path.join("blooms");
-			let trace_blooms_path = db_path.join("trace_blooms");
 			fs::create_dir_all(&blooms_path)?;
-			fs::create_dir_all(&trace_blooms_path)?;
 			let blooms = blooms_db::Database::open(blooms_path).unwrap();
-			let trace_blooms = blooms_db::Database::open(trace_blooms_path).unwrap();
 			let db = RestorationDB {
 				blooms,
-				trace_blooms,
 				key_value,
 			};
 			Ok(Arc::new(db))

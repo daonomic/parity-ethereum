@@ -38,7 +38,6 @@ pub use self::migration::migrate;
 struct AppDB {
 	key_value: Arc<KeyValueDB>,
 	blooms: blooms_db::Database,
-	trace_blooms: blooms_db::Database,
 }
 
 impl BlockChainDB for AppDB {
@@ -48,10 +47,6 @@ impl BlockChainDB for AppDB {
 
 	fn blooms(&self) -> &blooms_db::Database {
 		&self.blooms
-	}
-
-	fn trace_blooms(&self) -> &blooms_db::Database {
-		&self.trace_blooms
 	}
 }
 
@@ -102,14 +97,11 @@ pub fn open_database(client_path: &str, config: &DatabaseConfig) -> io::Result<A
 	let path = Path::new(client_path);
 
 	let blooms_path = path.join("blooms");
-	let trace_blooms_path = path.join("trace_blooms");
 	fs::create_dir_all(&blooms_path)?;
-	fs::create_dir_all(&trace_blooms_path)?;
 
 	let db = AppDB {
 		key_value: Arc::new(Database::open(&config, client_path)?),
 		blooms: blooms_db::Database::open(blooms_path)?,
-		trace_blooms: blooms_db::Database::open(trace_blooms_path)?,
 	};
 
 	Ok(Arc::new(db))

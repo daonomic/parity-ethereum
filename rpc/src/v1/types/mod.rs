@@ -36,7 +36,6 @@ mod rpc_settings;
 mod secretstore;
 mod sync;
 mod trace;
-mod trace_filter;
 mod transaction;
 mod transaction_request;
 mod transaction_condition;
@@ -72,7 +71,6 @@ pub use self::sync::{
 	TransactionStats, ChainStatus, EthProtocolInfo, PipProtocolInfo,
 };
 pub use self::trace::{LocalizedTrace, TraceResults, TraceResultsWithTransactionHash};
-pub use self::trace_filter::TraceFilter;
 pub use self::transaction::{Transaction, RichRawTransaction, LocalTransactionStatus};
 pub use self::transaction_request::TransactionRequest;
 pub use self::transaction_condition::TransactionCondition;

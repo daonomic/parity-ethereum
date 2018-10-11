@@ -180,29 +180,6 @@ fn can_trace_block_and_uncle_reward() {
 	client.flush_queue();
 	client.import_verified_blocks();
 
-	// Test0. Check overall filter
-	let filter = TraceFilter {
-		range: (BlockId::Number(1)..BlockId::Number(3)),
-		from_address: vec![],
-		to_address: vec![],
-		after: None,
-		count: None,
-	};
-
-	let traces = client.filter_traces(filter);
-	assert!(traces.is_some(), "Filtered traces should be present");
-	let traces_vec = traces.unwrap();
-	let block_reward_traces: Vec<LocalizedTrace> = traces_vec.clone().into_iter().filter(|trace| match (trace).action {
-		Reward(ref a) => a.reward_type == RewardType::Block,
-		_ => false,
-	}).collect();
-	assert_eq!(block_reward_traces.len(), 3);
-	let uncle_reward_traces: Vec<LocalizedTrace> = traces_vec.clone().into_iter().filter(|trace| match (trace).action {
-		Reward(ref a) => a.reward_type == RewardType::Uncle,
-		_ => false,
-	}).collect();
-	assert_eq!(uncle_reward_traces.len(), 1);
-
 	// Test1. Check block filter
 	let traces = client.block_traces(BlockId::Number(3));
 	assert_eq!(traces.unwrap().len(), 3);

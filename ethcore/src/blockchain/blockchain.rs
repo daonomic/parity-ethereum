@@ -59,21 +59,16 @@ pub trait BlockChainDB: Send + Sync {
 	/// Header blooms database.
 	fn blooms(&self) -> &blooms_db::Database;
 
-	/// Trace blooms database.
-	fn trace_blooms(&self) -> &blooms_db::Database;
-
 	/// Restore the DB from the given path
 	fn restore(&self, new_db: &str) -> Result<(), EthcoreError> {
 		// First, close the Blooms databases
 		self.blooms().close()?;
-		self.trace_blooms().close()?;
 
 		// Restore the key_value DB
 		self.key_value().restore(new_db)?;
 
 		// Re-open the Blooms databases
 		self.blooms().reopen()?;
-		self.trace_blooms().reopen()?;
 		Ok(())
 	}
 }

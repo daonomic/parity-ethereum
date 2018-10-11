@@ -37,7 +37,7 @@ use blockchain::{TreeRoute, BlockReceipts};
 use client::{
 	Nonce, Balance, ChainInfo, BlockInfo, ReopenBlock, CallContract, TransactionInfo, RegistryInfo,
 	PrepareOpenBlock, BlockChainClient, BlockChainInfo, BlockStatus, BlockId, Mode,
-	TransactionId, UncleId, TraceId, TraceFilter, LastHashes, CallAnalytics,
+	TransactionId, UncleId, TraceId, LastHashes, CallAnalytics,
 	ProvingBlockChainClient, ScheduleInfo, ImportSealedBlock, BroadcastProposalBlock, ImportBlock, StateOrBlock,
 	Call, StateClient, EngineInfo, AccountData, BlockChain, BlockProducer, SealedBlockImporter, IoClient,
 	BadBlocks,
@@ -819,10 +819,6 @@ impl BlockChainClient for TestBlockChainClient {
 
 	fn additional_params(&self) -> BTreeMap<String, String> {
 		Default::default()
-	}
-
-	fn filter_traces(&self, _filter: TraceFilter) -> Option<Vec<LocalizedTrace>> {
-		self.traces.read().clone()
 	}
 
 	fn trace(&self, _trace: TraceId) -> Option<LocalizedTrace> {

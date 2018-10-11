@@ -18,16 +18,12 @@
 
 use jsonrpc_core::Result;
 use jsonrpc_macros::Trailing;
-use v1::types::{TraceFilter, LocalizedTrace, BlockNumber, Index, CallRequest, Bytes, TraceResults, TraceResultsWithTransactionHash, H256, TraceOptions};
+use v1::types::{LocalizedTrace, BlockNumber, Index, CallRequest, Bytes, TraceResults, TraceResultsWithTransactionHash, H256, TraceOptions};
 
 build_rpc_trait! {
 	/// Traces specific rpc interface.
 	pub trait Traces {
 		type Metadata;
-
-		/// Returns traces matching given filter.
-		#[rpc(name = "trace_filter")]
-		fn filter(&self, TraceFilter) -> Result<Option<Vec<LocalizedTrace>>>;
 
 		/// Returns transaction trace at given index.
 		#[rpc(name = "trace_get")]
