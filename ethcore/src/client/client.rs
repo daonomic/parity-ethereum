@@ -43,7 +43,7 @@ use client::{
 };
 use client::{
 	BlockId, TransactionId, UncleId, TraceId, ClientConfig, BlockChainClient,
-	TraceFilter, CallAnalytics, Mode,
+	CallAnalytics, Mode,
 	ChainNotify, NewBlocks, ChainRoute, PruningInfo, ProvingBlockChainClient, EngineInfo, ChainMessageType,
 	IoClient, BadBlocks,
 };
@@ -2000,29 +2000,6 @@ impl BlockChainClient for Client {
 		};
 
 		Ok(self.chain.read().logs(blocks, |entry| filter.matches(entry), filter.limit))
-	}
-
-	fn filter_traces(&self, filter: TraceFilter) -> Option<Vec<LocalizedTrace>> {
-		if !self.tracedb.read().tracing_enabled() {
-			return None;
-		}
-
-		let start = self.block_number(filter.range.start)?;
-		let end = self.block_number(filter.range.end)?;
-
-		let db_filter = trace::Filter {
-			range: start as usize..end as usize,
-			from_address: filter.from_address.into(),
-			to_address: filter.to_address.into(),
-		};
-
-		let traces = self.tracedb.read()
-			.filter(&db_filter)
-			.into_iter()
-			.skip(filter.after.unwrap_or(0))
-			.take(filter.count.unwrap_or(usize::max_value()))
-			.collect();
-		Some(traces)
 	}
 
 	fn trace(&self, trace: TraceId) -> Option<LocalizedTrace> {

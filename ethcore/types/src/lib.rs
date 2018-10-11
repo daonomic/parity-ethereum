@@ -42,7 +42,6 @@ pub mod restoration_status;
 pub mod security_level;
 pub mod snapshot_manifest;
 pub mod state_diff;
-pub mod trace_filter;
 pub mod tree_route;
 pub mod verification_queue_info;
 pub mod ancestry_action;

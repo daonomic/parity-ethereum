@@ -21,7 +21,7 @@ use jsonrpc_macros::Trailing;
 use v1::Metadata;
 use v1::traits::Traces;
 use v1::helpers::errors;
-use v1::types::{TraceFilter, LocalizedTrace, BlockNumber, Index, CallRequest, Bytes, TraceResults, TraceResultsWithTransactionHash, TraceOptions, H256};
+use v1::types::{LocalizedTrace, BlockNumber, Index, CallRequest, Bytes, TraceResults, TraceResultsWithTransactionHash, TraceOptions, H256};
 
 /// Traces api implementation.
 // TODO: all calling APIs should be possible w. proved remote TX execution.
@@ -29,10 +29,6 @@ pub struct TracesClient;
 
 impl Traces for TracesClient {
 	type Metadata = Metadata;
-
-	fn filter(&self, _filter: TraceFilter) -> Result<Option<Vec<LocalizedTrace>>> {
-		Err(errors::light_unimplemented(None))
-	}
 
 	fn block_traces(&self, _block_number: BlockNumber) -> Result<Option<Vec<LocalizedTrace>>> {
 		Err(errors::light_unimplemented(None))
