@@ -23,7 +23,7 @@ use ethereum_types::{H256, H264};
 use kvdb::{DBTransaction};
 use parking_lot::RwLock;
 use header::BlockNumber;
-use trace::{LocalizedTrace, Config, Filter, Database as TraceDatabase, ImportRequest, DatabaseExtras};
+use trace::{LocalizedTrace, Config, Database as TraceDatabase, ImportRequest, DatabaseExtras};
 use db::{self, Key, Writable, Readable, CacheUpdatePolicy};
 use super::flat::{FlatTrace, FlatBlockTraces, FlatTransactionTraces};
 use cache_manager::CacheManager;
@@ -123,56 +123,6 @@ impl<T> TraceDB<T> where T: DatabaseExtras {
 	fn transactions_traces(&self, block_hash: &H256) -> Option<Vec<FlatTransactionTraces>> {
 		self.traces(block_hash).map(Into::into)
 	}
-
-	fn matching_block_traces(
-		&self,
-		filter: &Filter,
-		traces: FlatBlockTraces,
-		block_hash: H256,
-		block_number: BlockNumber
-	) -> Vec<LocalizedTrace> {
-		let tx_traces: Vec<FlatTransactionTraces> = traces.into();
-		tx_traces.into_iter()
-			.enumerate()
-			.flat_map(|(tx_number, tx_trace)| {
-				self.matching_transaction_traces(filter, tx_trace, block_hash.clone(), block_number, tx_number)
-			})
-			.collect()
-	}
-
-	fn matching_transaction_traces(
-		&self,
-		filter: &Filter,
-		traces: FlatTransactionTraces,
-		block_hash: H256,
-		block_number: BlockNumber,
-		tx_number: usize
-	) -> Vec<LocalizedTrace> {
-		let (trace_tx_number, trace_tx_hash) = match self.extras.transaction_hash(block_number, tx_number) {
-			Some(hash) => (Some(tx_number), Some(hash.clone())),
-			//None means trace without transaction (reward)
-			None => (None, None),
-		};
-
-		let flat_traces: Vec<FlatTrace> = traces.into();
-		flat_traces.into_iter()
-			.filter_map(|trace| {
-				match filter.matches(&trace) {
-					true => Some(LocalizedTrace {
-						action: trace.action,
-						result: trace.result,
-						subtraces: trace.subtraces,
-						trace_address: trace.trace_address.into_iter().collect(),
-						transaction_number: trace_tx_number,
-						transaction_hash: trace_tx_hash,
-						block_number: block_number,
-						block_hash: block_hash
-					}),
-					false => None
-				}
-			})
-			.collect()
-	}
 }
 
 impl<T> TraceDatabase for TraceDB<T> where T: DatabaseExtras {
@@ -193,26 +143,6 @@ impl<T> TraceDatabase for TraceDB<T> where T: DatabaseExtras {
 		// fast return if tracing is disabled
 		if !self.tracing_enabled() {
 			return;
-		}
-
-		// now let's rebuild the blooms
-		if !request.enacted.is_empty() {
-			let range_start = request.block_number + 1 - request.enacted.len() as u64;
-			let enacted_blooms: Vec<_> = request.enacted
-				.iter()
-				// all traces are expected to be found here. That's why `expect` has been used
-				// instead of `filter_map`. If some traces haven't been found, it meens that
-				// traces database is corrupted or incomplete.
-				.map(|block_hash| if block_hash == &request.block_hash {
-					request.traces.bloom()
-				} else {
-					self.traces(block_hash).expect("Traces database is incomplete.").bloom()
-				})
-				.collect();
-
-			self.db.trace_blooms()
-				.insert_blooms(range_start, enacted_blooms.iter())
-				.expect("Low level database error. Some issue with disk?");
 		}
 
 		// insert new block traces into the cache and the database
@@ -307,24 +237,6 @@ impl<T> TraceDatabase for TraceDB<T> where T: DatabaseExtras {
 						.collect::<Vec<LocalizedTrace>>()
 				})
 			)
-	}
-
-	fn filter(&self, filter: &Filter) -> Vec<LocalizedTrace> {
-		let possibilities = filter.bloom_possibilities();
-		let numbers = self.db.trace_blooms()
-			.filter(filter.range.start as u64, filter.range.end as u64, &possibilities)
-			.expect("Low level database error. Some issue with disk?");
-
-		numbers.into_iter()
-			.flat_map(|n| {
-				let number = n as BlockNumber;
-				let hash = self.extras.block_hash(number)
-					.expect("Expected to find block hash. Extras db is probably corrupted");
-				let traces = self.traces(&hash)
-					.expect("Expected to find a trace. Db is probably corrupted.");
-				self.matching_block_traces(filter, traces, hash, number)
-			})
-			.collect()
 	}
 }
 

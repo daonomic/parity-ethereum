@@ -20,7 +20,6 @@ use ethereum_types::H256;
 use header::BlockNumber;
 use trace::DatabaseExtras as TraceDatabaseExtras;
 use blockchain::{BlockChain, BlockProvider, TransactionAddress};
-pub use types::trace_filter::Filter;
 
 impl TraceDatabaseExtras for BlockChain {
 	fn block_hash(&self, block_number: BlockNumber) -> Option<H256> {

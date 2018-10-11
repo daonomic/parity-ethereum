@@ -156,7 +156,4 @@ pub trait Database {
 
 	/// Returns localized traces created in given block.
 	fn block_traces(&self, block_number: BlockNumber) -> Option<Vec<LocalizedTrace>>;
-
-	/// Filter traces matching given filter.
-	fn filter(&self, filter: &Filter) -> Vec<LocalizedTrace>;
 }
