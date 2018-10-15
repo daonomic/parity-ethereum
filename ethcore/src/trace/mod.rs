@@ -124,4 +124,7 @@ pub trait Database {
 
 	/// Returns localized traces created in given block.
 	fn block_traces(&self, block_number: BlockNumber) -> Option<Vec<LocalizedTrace>>;
+
+	/// Removes all traces for block
+	fn remove_block_traces(&self, block_number: BlockNumber);
 }
