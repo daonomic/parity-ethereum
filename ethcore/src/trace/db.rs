@@ -123,6 +123,13 @@ impl<T> TraceDB<T> where T: DatabaseExtras {
 	fn transactions_traces(&self, block_hash: &H256) -> Option<Vec<FlatTransactionTraces>> {
 		self.traces(block_hash).map(Into::into)
 	}
+
+	fn remove_block_traces_by_hash(&self, block_hash: H256) {
+		let mut traces = self.traces.write();
+		let mut tx = self.db.key_value().transaction();
+		tx.delete_with_cache(db::COL_TRACE, &mut *traces, block_hash);
+		self.db.key_value().write(tx).unwrap();
+	}
 }
 
 impl<T> TraceDatabase for TraceDB<T> where T: DatabaseExtras {
@@ -154,6 +161,11 @@ impl<T> TraceDatabase for TraceDB<T> where T: DatabaseExtras {
 			// note_used must be called after locking traces to avoid cache/traces deadlock on garbage collection
 			self.note_trace_used(request.block_hash);
 		}
+	}
+
+	fn remove_block_traces(&self, block_number: BlockNumber) {
+		let block_hash = self.extras.block_hash(block_number).expect("no block found");
+		self.remove_block_traces_by_hash(block_hash);
 	}
 
 	fn trace(&self, block_number: BlockNumber, tx_position: usize, trace_position: Vec<usize>) -> Option<LocalizedTrace> {
