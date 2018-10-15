@@ -831,6 +831,10 @@ impl BlockChainClient for TestBlockChainClient {
 		self.traces.read().clone()
 	}
 
+	fn remove_block_traces(&self, _block_number: BlockNumber) {
+
+	}
+
 	fn transactions_to_propagate(&self) -> Vec<Arc<VerifiedTransaction>> {
 		self.miner.ready_transactions(self, 4096, miner::PendingOrdering::Priority)
 	}

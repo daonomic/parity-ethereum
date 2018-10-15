@@ -37,6 +37,10 @@ build_rpc_trait! {
 		#[rpc(name = "trace_block")]
 		fn block_traces(&self, BlockNumber) -> Result<Option<Vec<LocalizedTrace>>>;
 
+		/// Removes all traces produced at given block.
+		#[rpc(name = "trace_removeBlock")]
+		fn remove_block_traces(&self, BlockNumber) -> Result<bool>;
+
 		/// Executes the given call and returns a number of possible traces for it.
 		#[rpc(name = "trace_call")]
 		fn call(&self, CallRequest, TraceOptions, Trailing<BlockNumber>) -> Result<TraceResults>;

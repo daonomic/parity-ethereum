@@ -30,6 +30,10 @@ pub struct TracesClient;
 impl Traces for TracesClient {
 	type Metadata = Metadata;
 
+	fn remove_block_traces(&self, block_number: BlockNumber) -> Result<bool> {
+		Err(errors::light_unimplemented(None))
+	}
+
 	fn block_traces(&self, _block_number: BlockNumber) -> Result<Option<Vec<LocalizedTrace>>> {
 		Err(errors::light_unimplemented(None))
 	}
