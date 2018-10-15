@@ -67,6 +67,16 @@ impl<C, S> Traces for TracesClient<C> where
 			.map(|traces| traces.into_iter().map(LocalizedTrace::from).collect()))
 	}
 
+	fn remove_block_traces(&self, block_number: BlockNumber) -> Result<bool> {
+		match block_number {
+			BlockNumber::Num(x) => {
+				self.client.remove_block_traces(x);
+				Ok(true)
+			}
+			_ => Ok(false)
+		}
+	}
+
 	fn transaction_traces(&self, transaction_hash: H256) -> Result<Option<Vec<LocalizedTrace>>> {
 		Ok(self.client.transaction_traces(TransactionId::Hash(transaction_hash.into()))
 			.map(|traces| traces.into_iter().map(LocalizedTrace::from).collect()))

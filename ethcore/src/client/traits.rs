@@ -323,6 +323,9 @@ pub trait BlockChainClient : Sync + Send + AccountData + BlockChain + CallContra
 	/// Returns traces created by transaction from block.
 	fn block_traces(&self, trace: BlockId) -> Option<Vec<LocalizedTrace>>;
 
+	/// Removes traces for block.
+	fn remove_block_traces(&self, block_number: BlockNumber);
+
 	/// Get last hashes starting from best block.
 	fn last_hashes(&self) -> LastHashes;
 

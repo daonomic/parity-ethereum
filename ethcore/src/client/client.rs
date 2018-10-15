@@ -2002,6 +2002,10 @@ impl BlockChainClient for Client {
 			.and_then(|number| self.tracedb.read().block_traces(number))
 	}
 
+	fn remove_block_traces(&self, block_number: BlockNumber) {
+		self.tracedb.read().remove_block_traces(block_number)
+	}
+
 	fn last_hashes(&self) -> LastHashes {
 		(*self.build_last_hashes(&self.chain.read().best_block_hash())).clone()
 	}
